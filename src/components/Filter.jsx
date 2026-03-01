@@ -53,7 +53,7 @@ const Filter = ({ transactions, onFilter }) => {
   };
 
   return (
-    
+
     <div className="sticky top-20 z-40 w-full px-4 py-3 bg-white dark:bg-gray-900 shadow-md rounded-md mb-6">
 
       {/* Desktop Layout */}
@@ -103,7 +103,10 @@ const Filter = ({ transactions, onFilter }) => {
               <input
                 type="date"
                 value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
+                onChange={(e) => (
+                  setToDate(e.target.value),
+                  setShowDateDropdown(!showDateDropdown)
+                )}
                 className="w-full border rounded px-2 py-1"
               />
             </div>
@@ -148,25 +151,25 @@ const Filter = ({ transactions, onFilter }) => {
             Filters
           </button>
           {showMobileFilters && (
-          <div className="flex items-center gap-2">
-            {showSearch && (
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded px-3 py-2 mt-2 w-full"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') applyFilter();
-                }}
-              />
-            )}
+            <div className="flex items-center gap-2">
+              {showSearch && (
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border rounded px-3 py-2 mt-2 w-full"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') applyFilter();
+                  }}
+                />
+              )}
 
-            <FiSearch
-              onClick={() => setShowSearch(!showSearch)}
-              className="text-xl cursor-pointer"
-            />
-          </div>
+              <FiSearch
+                onClick={() => setShowSearch(!showSearch)}
+                className="text-xl cursor-pointer"
+              />
+            </div>
           )}
         </div>
 
@@ -195,31 +198,31 @@ const Filter = ({ transactions, onFilter }) => {
             </select>
 
             <div className="relative">
-          <button
-            type="button"
-            onClick={() => setShowDateDropdown(!showDateDropdown)}
-            className="w-full text-left pl-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
-          >
-            <FaCalendarAlt className='inline text-gray-600 mb-1' /> Date {showDateDropdown ? <FaChevronUp className='inline text-sm float-right mt-1 mr-1' /> : <FaChevronDown className='inline text-sm float-right mt-1 mr-1' />}
-          </button>
+              <button
+                type="button"
+                onClick={() => setShowDateDropdown(!showDateDropdown)}
+                className="w-full text-left pl-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
+              >
+                <FaCalendarAlt className='inline text-gray-600 mb-1' /> Date {showDateDropdown ? <FaChevronUp className='inline text-sm float-right mt-1 mr-1' /> : <FaChevronDown className='inline text-sm float-right mt-1 mr-1' />}
+              </button>
 
-          {showDateDropdown && (
-            <div className="absolute z-10 mt-2 bg-white dark:bg-gray-800 p-3 rounded shadow-lg space-y-2">
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="w-full border rounded px-2 py-1"
-              />
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="w-full border rounded px-2 py-1"
-              />
+              {showDateDropdown && (
+                <div className="absolute z-10 mt-2 bg-white dark:bg-gray-800 p-3 rounded shadow-lg space-y-2">
+                  <input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="w-full border rounded px-2 py-1"
+                  />
+                  <input
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="w-full border rounded px-2 py-1"
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
             <div className="flex justify-between">
               <button

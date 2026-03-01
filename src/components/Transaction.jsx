@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { FaRupeeSign, FaCalendarAlt } from 'react-icons/fa'
+import { NavLink } from 'react-router-dom';
 const Transaction = ({ transaction }) => {
 
     const [showAmount, setShowAmount] = useState(false);
@@ -35,12 +36,12 @@ const Transaction = ({ transaction }) => {
                 <div className="border border-gray-100 mb-5"></div>
                 <div className="flex flex-col justify-between mb-4">
 
-                    <a
-                        href={`./transactions/${transaction.id}`}
+                    <NavLink
+                        to={`/transactions/${transaction.id}`}
                         className="h-[36px] bg-oliveGreen hover:bg-green-100 py-2 text-green-900 rounded-lg text-center text-sm"
                     >
                         Read More
-                    </a>
+                    </NavLink>
                 </div>
             </div>
         </div>

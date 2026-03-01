@@ -5,9 +5,9 @@ import 'react-toastify/dist/ReactToastify.css'
 const MainLayOut = ({ onLogout }) => {
   return (
     <>
-        <Navbar onLogout={onLogout} />
-        <Outlet />
-        <ToastContainer />
+      <Navbar onLogout={onLogout} />
+      <Outlet />
+      <ToastContainer />
     </>
   )
 }

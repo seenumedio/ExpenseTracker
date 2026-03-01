@@ -1,62 +1,63 @@
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/images/icon.png'
+import logo from '../assets/images/icon.png';
 
 const Navbar = ({ onLogout }) => {
+  // Updated Link styles for a glassy feel
   const linkClass = ({ isActive }) =>
     isActive
-      ? "text-white bg-black hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
-      : "text-indigo hover:bg-gray-900 hover:text-white rounded-md px-3 py-2";
+      ? "text-white bg-white/20 backdrop-blur-sm border border-white/20 rounded-md px-3 py-2 transition-all"
+      : "text-gray-300 hover:bg-white/10 hover:text-white rounded-md px-3 py-2 transition-all";
 
   return (
-    <nav className="sticky top-0 left-0 w-full z-50 bg-golden border-b border-blue-600">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
-          <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
-            <NavLink className="flex flex-shrink-0 items-center mr-4" to="/">
-              <img
-                className="h-10 w-auto"
-                src={logo}
-                alt="React Expenses"
-              />
-              <span className="hidden md:block text-2xl font-bold ml-2">
-                EXPENSE TRACKER
-              </span>
-            </NavLink>
-            <div className="md:ml-auto">
-              <div className="flex space-x-2">
-                <NavLink
-                  to="/"
-                  className={linkClass}
-                >Home</NavLink>
-                <NavLink
-                  to="/transactions"
-                  className={linkClass}
-                >List</NavLink>
-                <NavLink
-                  to="/add-transaction"
-                  className={linkClass}
-                >Add</NavLink>
-              </div>
-            </div>
-          </div>
+    <nav className="fixed z-50 w-[95%] top-4 left-1/2 -translate-x-1/2 rounded-lg
+      bg-black/75
+      backdrop-blur-sm 
+      backdrop-saturate-150 
+      border-b border-white/10 
+      shadow-xl">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div className="flex h-16 sm:h-20 items-center justify-between">
 
-          <div className="flex items-center">
-            <button
-              onClick={() => {
-                if (window.confirm("Are you sure you want to log out?")) {
-                  onLogout();
-                }
-              }}
-              className="ml-4 hover:text-red-500 hover:bg-red-200 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-            >
-              Log Out
-            </button>
-          </div>
+{/* LEFT — Logo */}
+<NavLink className="flex items-center gap-2" to="/">
+  <img
+    className="h-8 sm:h-10 w-auto brightness-110"
+    src={logo}
+    alt="Expense Tracker"
+  />
+  <span className="hidden md:block text-xl font-bold text-white tracking-tight">
+    EXPENSE <span className="text-blue-400">TRACKER</span>
+  </span>
+</NavLink>
 
-        </div>
+{/* RIGHT — Links + Logout */}
+<div className="flex items-center gap-4">
+  <NavLink to="/transactions" className={linkClass}>
+    List
+  </NavLink>
+
+  <NavLink to="/add-transaction" className={linkClass}>
+    Add
+  </NavLink>
+
+  <button
+    onClick={() => {
+      if (window.confirm("Are you sure you want to log out?")) {
+        onLogout();
+      }
+    }}
+    className="px-4 py-2 rounded-md text-sm font-medium
+      bg-red-500/20 text-red-400 border border-red-500/30
+      hover:bg-red-500 hover:text-white transition-all duration-300"
+  >
+    Log Out
+  </button>
+</div>
+
+</div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
