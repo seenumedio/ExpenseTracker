@@ -1,0 +1,40 @@
+{
+  "transactions": [
+    {
+      "id": "8c08",
+      "type": "Income",
+      "category": "Salary",
+      "recurring": "Monthly",
+      "date": "2025-06-01",
+      "description": "This is my Pocket Money",
+      "amount": "5000"
+    },
+    {
+      "id": "be14",
+      "type": "Expense",
+      "category": "Food",
+      "recurring": "Weekly",
+      "date": "2025-06-05",
+      "description": "Hotel Biryani",
+      "amount": "300"
+    },
+    {
+      "id": "5ed1",
+      "type": "Expense",
+      "category": "Entertainment",
+      "recurring": "Monthly",
+      "date": "2025-06-05",
+      "description": "Watched a movie at the theatre",
+      "amount": "500"
+    },
+    {
+      "id": "ecab",
+      "type": "Expense",
+      "category": "Snacks",
+      "recurring": "Daily",
+      "date": "2025-06-05",
+      "description": "Samosa 4 per day",
+      "amount": "120"
+    }
+  ]
+}
