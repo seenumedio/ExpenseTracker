@@ -3,8 +3,34 @@ const mongoose = require('mongoose')
 
 // get all txs
 const getAllTxs = async (req, res) => {
-    const txs = await Transaction.find({}).sort({ date: -1 })
-    res.status(200).json(txs)
+    try {
+        const { search, type, recurring, startDate, endDate } = req.query;
+        // always include userId in query to ensure isolation
+        const query = { userId: req.user.id }
+        // case-insensitive substring match with tx category/description
+        if (search) {
+            query.$or = [
+                {category : { $regex: search, $options: 'i' }},
+                {description:{ $regex: search, $options: 'i' }},
+            ]
+        }
+        if (type && type !== 'all') {
+            query.type = { $regex: type, $options: 'i' };
+        }
+        if (recurring && recurring !== 'all') {
+            query.recurring = { $regex: recurring, $options: 'i' };
+        }
+        // Add date range bounds
+        if (startDate || endDate) {
+            query.date = {};
+            if (startDate) query.date.$gte = new Date(startDate);
+            if (endDate) query.date.$lte = new Date(endDate);
+        }
+        const txs = await Transaction.find(query).sort({ date: -1 })
+        res.status(200).json(txs)
+    } catch (err) {
+        res.status(400).json({ error: err.message })
+    }
 }
 // get spec tx
 const getOneTx = async (req, res) => {
@@ -12,7 +38,7 @@ const getOneTx = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(400).json({ mssg: 'Invalid id' })
 
-    const tx = await Transaction.findById(id)
+    const tx = await Transaction.findOne({ _id: id, userId: req.user.id })
     if (!tx) return res.status(404).json({ mssg: 'Transaction not found' })
 
     res.status(200).json(tx)
@@ -23,10 +49,15 @@ const addTx = async (req, res) => {
     try {
         const startDate = date ? new Date(date) : new Date()
         startDate.setHours(0, 0, 0, 0)
-        const exists = await Transaction.findOne({ type, category, recurring, description, amount, date: startDate })
-        if (exists)
-            return res.status(400).json({ mssg: 'Duplicate transaction found' })
-        const tx = await Transaction.create({ type, category, recurring, description, amount, date: startDate })
+        const tx = await Transaction.create({
+            type,
+            category,
+            recurring,
+            description,
+            amount,
+            date: startDate,
+            userId: req.user.id,
+        })
         res.status(200).json(tx)
     } catch (err) {
         res.status(400).json({ error: err.message })
@@ -38,7 +69,7 @@ const deleteTx = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id))
         return res.status(400).json({ mssg: 'Invalid id' })
     try {
-        const tx = await Transaction.findByIdAndDelete(id)
+        const tx = await Transaction.findOneAndDelete({ _id: id, userId: req.user.id })
         if (!tx)
             return res.status(404).json({ mssg: 'Transaction not found' })
         res.status(200).json({ mssg: 'Transaction deleted successfully' })
@@ -53,10 +84,10 @@ const updateTx = async (req, res) => {
         return res.status(400).json({ mssg: 'Invalid id' })
 
     try {
-        const tx = await Transaction.findByIdAndUpdate(
-            id,
+        const tx = await Transaction.findOneAndUpdate(
+            { _id: id, userId: req.user.id },
             { ...req.body },
-            {new: true, runValidators: true}
+            { new: true, runValidators: true }
         )
         if (!tx)
             return res.status(404).json({ mssg: 'Transaction not found' })

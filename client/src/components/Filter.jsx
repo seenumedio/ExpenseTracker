@@ -1,85 +1,95 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 import { FaChevronDown, FaChevronUp, FaCalendarAlt } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import {setFilters} from '../features/transactions/txSlice'
 
-const Filter = ({ transactions, onFilter }) => {
+const Filter = () => {
+  const [search, setSearch] = useState('');
   const [type, setType] = useState('');
-  const [category, setCategory] = useState('');
+  const [recurring, setRecurring] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDateDropdown, setShowDateDropdown] = useState(false);
-
-  const defaultCategories = [
-    "Food", "Utilities", "Rent", "Travel",
-    "Entertainment", "Health", "Shopping",
-    "Salary", "Investment"
-  ];
-
   const [showSearch, setShowSearch] = useState(false);
 
-  const applyFilter = () => {
-    let filtered = transactions;
+  const dispatch = useDispatch();
 
-    if (type) filtered = filtered.filter(tx => tx.type === type);
-    if (category) filtered = filtered.filter(tx => tx.category === category);
-    if (fromDate) filtered = filtered.filter(tx => new Date(tx.date) >= new Date(fromDate));
-    if (toDate) filtered = filtered.filter(tx => new Date(tx.date) <= new Date(toDate));
-
-    if (searchTerm.trim()) {
-      const term = searchTerm.trim().toLowerCase();
-      filtered = filtered.filter(tx =>
-        tx.description?.toLowerCase().includes(term) ||
-        tx.category?.toLowerCase().includes(term) ||
-        tx.type?.toLowerCase().includes(term) ||
-        tx.recurring?.toLowerCase().includes(term)
+  // Debounce local search state and automatically dispatch it to Redux
+  useEffect(()=>{
+    // timer to dispatch search after 300ms
+    const delayDebounceFn = setTimeout(() => {
+      dispatch(
+        setFilters({
+          search: search
+        })
       );
-    }
+    }, 300);
+    // clear prev timer, if user types again before 300ms
+    return () => clearTimeout(delayDebounceFn);
+  }, [search, dispatch]);
 
-    onFilter(filtered);
-    setShowMobileFilters(false);
-  };
-
+  const applyFilter = (e) => {
+    e?.preventDefault();
+    dispatch(
+      setFilters({
+        type,
+        recurring,
+        startDate: fromDate,
+        endDate: toDate
+      })
+    )
+  }
   const resetFilters = () => {
+    setSearch('');
     setType('');
-    setCategory('');
+    setRecurring('');
     setFromDate('');
     setToDate('');
-    setSearchTerm('');
-    setShowDateDropdown(false);
-    onFilter(transactions);
-    setShowMobileFilters(false);
-  };
+    
+    dispatch(
+      setFilters({
+        search: '',
+        type: 'all',
+        recurring: 'all',
+        startDate: '',
+        endDate: '',
+      })
+    )
+  }
 
   return (
 
     <div className="sticky top-20 z-40 w-full px-4 py-3 bg-white dark:bg-gray-900 shadow-md rounded-md mb-6">
 
       {/* Desktop Layout */}
+      <form onSubmit={applyFilter}>
       <div className="hidden sm:flex items-center gap-4 flex-wrap">
 
         {/* Type */}
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="border rounded px-3 py-2"
+          className="border rounded px-3 py-2 cursor-pointer"
         >
           <option value="">All Types</option>
           <option value="Income">Income</option>
           <option value="Expense">Expense</option>
         </select>
 
-        {/* Category */}
+        {/* Recurring-type */}
         <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border rounded px-3 py-2"
+          value={recurring}
+          onChange={(e) => setRecurring(e.target.value)}
+          className="border rounded px-3 py-2 cursor-pointer"
         >
-          <option value="">All Categories</option>
-          {defaultCategories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
+          <option value="">All Recurring</option>
+          <option value="None">None</option>
+          <option value="Daily">Daily</option>
+          <option value="Weekly">Weekly</option>
+          <option value="Monthly">Monthly</option>
         </select>
 
         {/* Date */}
@@ -117,9 +127,9 @@ const Filter = ({ transactions, onFilter }) => {
         <input
           type="text"
           placeholder="Search anything..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 border rounded px-3 py-2 min-w-[200px]"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 border rounded px-3 py-2 cursor-text min-w-[200px]"
           onKeyDown={(e) => {
             if (e.key === 'Enter') applyFilter();
           }}
@@ -156,9 +166,9 @@ const Filter = ({ transactions, onFilter }) => {
                 <input
                   type="text"
                   placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border rounded px-3 py-2 mt-2 w-full"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="border rounded px-3 py-2 cursor-text mt-2 w-full"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') applyFilter();
                   }}
@@ -175,28 +185,29 @@ const Filter = ({ transactions, onFilter }) => {
 
         {showMobileFilters && (
           <div className="mt-4 space-y-3">
-
+            {/* income-type */}
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border rounded px-3 py-2 cursor-pointer"
             >
               <option value="">All Types</option>
               <option value="Income">Income</option>
               <option value="Expense">Expense</option>
             </select>
-
+            {/* recurring-type */}
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full border rounded px-3 py-2"
+              value={recurring}
+              onChange={(e) => setRecurring(e.target.value)}
+              className="border rounded px-3 py-2 cursor-pointer"
             >
-              <option value="">All Categories</option>
-              {defaultCategories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
+              <option value="">All Recurring</option>
+              <option value="None">None</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
             </select>
-
+            {/* date range */}
             <div className="relative">
               <button
                 type="button"
@@ -241,6 +252,7 @@ const Filter = ({ transactions, onFilter }) => {
           </div>
         )}
       </div>
+      </form>
     </div>
   );
 };

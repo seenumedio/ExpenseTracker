@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { FaRupeeSign, FaCalendarAlt } from 'react-icons/fa'
 import { NavLink } from 'react-router-dom';
 const Transaction = ({ transaction }) => {
-
     const [showAmount, setShowAmount] = useState(false);
     return (
         <div className="bg-white rounded-xl shadow-md relative">

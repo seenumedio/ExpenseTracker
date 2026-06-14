@@ -31,7 +31,7 @@ const EditTransactionPage = ({transactions}) => {
             setType(transaction.type);
             setRecurring(transaction.recurring);
             setCategory(transaction.category);
-            setDate(transaction.date);
+            setDate(transaction.rawDate);
             setDescription(transaction.description);
             setAmount(transaction.amount);
         }
@@ -54,8 +54,8 @@ const EditTransactionPage = ({transactions}) => {
         };
 
         if(updatedTransaction){
-            await API.patch(`/transactions/${id}`, updatedTransaction)
-            dispatch(updateTx(updatedTransaction))
+            const res = await API.patch(`/transactions/${id}`, updatedTransaction)
+            dispatch(updateTx(res.data));
         }
         toast.success('Transaction updated successfully');
         return navigate(`/transactions/${id}`);
@@ -152,6 +152,7 @@ const EditTransactionPage = ({transactions}) => {
                                 placeholder='In Rupees'
                                 required
                                 value={amount}
+                                onWheel={(e) => e.target.blur()}
                                 onChange={(e) => setAmount(e.target.value)}
                             />
 

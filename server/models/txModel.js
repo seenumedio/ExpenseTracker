@@ -1,31 +1,42 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
-    type:{
+    userId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    type: {
         type: String,
         required: true
     },
-    category:{
+    category: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+    },
+    recurring: {
         type: String,
         required: true
     },
-    recurring:{
-        type: String,
-        required: true
-    },
-    amount:{
+    amount: {
         type: Number,
-        required:true
+        required: true,
+        min: 0,
+        max: 10000000,
     },
-    description:{
+    description: {
         type: String,
+        trim: true,
+        maxlength: 100,
     },
     date: {
         type: Date,
         default: Date.now
     }
 },
-{timestamps: true})
+    { timestamps: true })
 
 // prevent exact duplicates
 schema.index(

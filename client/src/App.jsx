@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'
 import MainLayOut from './layouts/MainLayOut';
 import HomePage from './pages/HomePage';
@@ -7,7 +7,8 @@ import TransactionPage from './pages/TransactionPage';
 import NotFoundPage from './pages/NotFoundPage';
 import AddTransactionPage from './pages/AddTransactionPage';
 import EditTransactionPage from './pages/EditTransactionPage';
-import LoginPage from './pages/LoginPage';
+
+import AuthPage from './pages/AuthPage.jsx';
 
 import { useSelector, useDispatch } from 'react-redux'
 import API from './api/axios.js'
@@ -15,52 +16,45 @@ import { setTxs, setLoading } from './features/transactions/txSlice.js'
 
 const App = () => {
   // login or logout
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { token } = useSelector(state => state.auth)
   const transactions = useSelector(state => state.transactions.txs)
+  const filters = useSelector(state => state.transactions.filters)
   const dispatch = useDispatch()
+
   // fetch txs
   useEffect(() => {
     const fetchTxs = async () => {
-        try {
-            dispatch(setLoading(true))
-            const res = await API.get('/transactions')
-            dispatch(setTxs(res.data))
-        } catch (err) {
-            console.log('Error:', err)
-        } finally {
-            dispatch(setLoading(false))
-        }
+      const params = new URLSearchParams();
+      if (filters.search) params.append('search', filters.search);
+      if (filters.type && filters.type !== 'all') params.append('type', filters.type);
+      if (filters.recurring && filters.recurring !== 'all') params.append('recurring', filters.recurring);
+      if (filters.startDate) params.append('startDate', filters.startDate);
+      if (filters.endDate) params.append('endDate', filters.endDate);
+      try {
+        dispatch(setLoading(true))
+        const res = await API.get(`/transactions?${params.toString()}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        dispatch(setTxs(res.data))
+      } catch (err) {
+        console.log('Error:', err)
+      } finally {
+        dispatch(setLoading(false))
+      }
     }
-    fetchTxs()
-  }, [dispatch])
+    console.log(filters);
+    if (token) fetchTxs()
+  }, [filters, dispatch, token])
 
-  useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn");
-    setIsLoggedIn(loggedIn === "true");
-  }, []);
-
-  const handleLogin = () => setIsLoggedIn(true);
-  // Show login page for all routes if not logged in
-  if (!isLoggedIn) {
-    return <LoginPage onLogin={handleLogin} />;
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userPassword");
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
-  };
-  // const router = createBrowserRouter(
-  //   createRoutesFromElements(
-
-  //   )
-  // );
+  // no token=> show auth forms
+  if (!token) return <AuthPage />
 
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<MainLayOut onLogout={handleLogout} />}>
+        <Route path='/' element={<MainLayOut />}>
           <Route
             index
             element={<HomePage transactions={transactions} />}
@@ -75,7 +69,7 @@ const App = () => {
           />
           <Route
             path='/edit-transaction/:id'
-            element={<EditTransactionPage transactions={transactions}/>}
+            element={<EditTransactionPage transactions={transactions} />}
           />
           <Route
             path='/transactions/:id'

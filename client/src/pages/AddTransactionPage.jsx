@@ -14,7 +14,7 @@ const AddTransactionPage = () => {
     const [type, setType] = useState('Income');
     const [recurring, setRecurring] = useState('Monthly');
     const [category, setCategory] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState(Date.now());
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
 
@@ -33,14 +33,15 @@ const AddTransactionPage = () => {
             amount
         };
         if (newTransaction) {
-            await API.post('/transactions', newTransaction)
-            dispatch(addTx(newTransaction));
+            const res = await API.post('/transactions', newTransaction)
+            console.log(res.data);
+            dispatch(addTx(res.data));
         }
         toast.success('Transaction added successfully');
         return navigate('/transactions');
     };
 
-   
+
     return (
         <section className="bg-indigo-50">
             <div className="container m-auto max-w-2xl py-20">
@@ -124,6 +125,7 @@ const AddTransactionPage = () => {
                                 placeholder='In Rupees'
                                 required
                                 value={amount}
+                                onWheel={(e) => e.target.blur()}
                                 onChange={(e) => setAmount(e.target.value)}
                             />
 
@@ -135,7 +137,7 @@ const AddTransactionPage = () => {
                             </label>
                             <DatePicker
                                 selected={date ? new Date(date) : null}
-                                onChange={(d) => setDate(d.toISOString().slice(0, 10))}
+                                onChange={(d) => setDate(d.toISOString().split('T')[0])}
                                 placeholderText="Select a date"
                                 dateFormat="dd/MM/yyyy"
                                 className="border rounded w-full py-2 px-3"

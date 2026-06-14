@@ -1,20 +1,25 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import logo from '../assets/images/icon.png';
 
-const Navbar = ({ onLogout }) => {
+import { useDispatch } from 'react-redux';
+import {logout} from '../features/auth/authSlice.js'
+
+const Navbar = () => {
   // Updated Link styles for a glassy feel
+  const dispatch = useDispatch();
+  const isHistory = useLocation().pathname === '/transactions';
   const linkClass = ({ isActive }) =>
     isActive
       ? "text-white bg-white/20 backdrop-blur-sm border border-white/20 rounded-md px-3 py-2 transition-all hidden sm:block"
       : "text-gray-300 hover:bg-white/10 hover:text-white rounded-md px-3 py-2 transition-all hidden sm:block";
 
   return (
-    <nav className="fixed z-50 w-[95%] top-4 left-1/2 -translate-x-1/2 rounded-lg
-      bg-black/75
-      backdrop-blur-sm 
+    <nav className={`${isHistory ? 'relative': 'fixed'} z-50 w-[95%] top-4 left-1/2 -translate-x-1/2 rounded-lg
+      bg-gradient-to-r from-black/65 via-black/40 to-black/65
+      backdrop-blur-md 
       backdrop-saturate-150 
       border-b border-white/10 
-      shadow-xl">
+      shadow-2xl`}>
       <div className="mx-auto max-w-5xl px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
 
@@ -43,7 +48,7 @@ const Navbar = ({ onLogout }) => {
             <button
               onClick={() => {
                 if (window.confirm("Are you sure you want to log out?")) {
-                  onLogout();
+                  dispatch(logout());
                 }
               }}
               className="px-2 py-1 rounded-md text-sm font-medium

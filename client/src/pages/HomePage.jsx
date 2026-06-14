@@ -8,7 +8,6 @@ import BarExpenses from '../components/BarExpenses'
 import RecentTxs from '../components/RecentTxs'
 import NewUserPage from './NewUserPage';
 
-
 const HomePage = ({transactions}) => {
 
   function setTransactions(){

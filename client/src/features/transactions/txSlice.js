@@ -2,24 +2,43 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 
 const initialState = {
     txs: [],
-    loading: false
+    loading: false,
+    filters: {
+        search: '',
+        type: 'all',
+        recurring: 'all',
+        startDate: '',
+        endDate: '',
+    },
 }
 
 export const txSlice = createSlice({
     name: 'transactions',
     initialState,
     reducers: {
-        setLoading: (state, action) =>{
+        setLoading: (state, action) => {
             state.loading = action.payload
+        },
+        setFilters: (state, action) => {
+            state.filters = {
+                ...state.filters,
+                ...action.payload
+            };
         },
         setTxs: (state, action) => {
             state.txs = action.payload.map(tx => {
                 const { _id, ...rest } = tx
-                return { ...rest, id: _id }
+                return { ...rest, id: _id, rawDate: tx.date, date: new Date(tx.date).toLocaleDateString('en-GB') }
             })
         },
         addTx: (state, action) => {
-            const newTx = { ...action.payload }
+            const { date, _id } = action.payload
+            const newTx = {
+                ...action.payload,
+                id: _id,
+                rawDate: date,
+                date: new Date(date).toLocaleDateString('en-GB'),
+            }
             state.txs.push(newTx)
         },
         removeTx: (state, action) => {
@@ -27,11 +46,17 @@ export const txSlice = createSlice({
             state.txs = state.txs.filter(x => String(x.id) !== String(id))
         },
         updateTx: (state, action) => {
-            const newTx = action.payload
+            const { date, _id } = action.payload
+            const newTx = {
+                ...action.payload,
+                id: _id,
+                rawDate: date,
+                date: new Date(date).toLocaleDateString('en-GB'),
+            }
             state.txs = state.txs.map(x => String(x.id) === String(newTx.id) ? newTx : x)
         }
     }
 })
 
-export const { setLoading, setTxs, addTx, removeTx, updateTx } = txSlice.actions
+export const { setLoading, setFilters, setTxs, addTx, removeTx, updateTx } = txSlice.actions
 export default txSlice.reducer
