@@ -1,138 +1,72 @@
 import { useState, useEffect } from 'react';
 
-const DEFAULT_CATEGORIES = ['Food', 'Utilities', 'Entertainment', 'Salary', 'Rent'];
+const DEFAULT_CATEGORIES = [
+  'Food', 'Utilities', 'Entertainment', 'Salary',
+  'Rent', 'Travel', 'Shopping', 'Health'
+];
 
-const CategorySelector = ({ selected, onChange, required }) => {
+const CategorySelector = ({ selected = '', onChange, required = false }) => {
   const [customCategory, setCustomCategory] = useState('');
-  const [customAdded, setCustomAdded] = useState(null);
-  const [editing, setEditing] = useState(false);
-  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [isCustom, setIsCustom] = useState(false);
 
   useEffect(() => {
-    // If selected is not a default category and is non-empty, treat as custom
-    if (
-      selected &&
-      !DEFAULT_CATEGORIES.some(cat => cat.toLowerCase() === selected.toLowerCase())
-    ) {
-      setCustomAdded(selected);
-      setCustomCategory(selected);
-      setShowCustomInput(false);
-      setEditing(false);
-    } else {
-      setCustomAdded(null);
+    if (!selected) {
+      setIsCustom(false);
       setCustomCategory('');
-      setShowCustomInput(false);
-      setEditing(false);
+      return;
     }
+    const isDefault = DEFAULT_CATEGORIES.some(
+      cat => cat.toLowerCase() === selected.toLowerCase()
+    );
+    setIsCustom(!isDefault);
+    if (!isDefault) setCustomCategory(selected);
+    else setCustomCategory('');
   }, [selected]);
 
   const handleSelect = (e) => {
     const value = e.target.value;
     if (value === 'Custom') {
-      setShowCustomInput(true);
+      setIsCustom(true);
+      setCustomCategory('');
+      onChange('');
     } else {
-      setCustomAdded(null);
-      setShowCustomInput(false);
+      setIsCustom(false);
+      setCustomCategory('');
       onChange(value);
     }
   };
 
-  const handleAddCustom = () => {
-    const trimmed = customCategory.trim();
-
-    if (!trimmed) return;
-
-    const isDuplicate =
-      DEFAULT_CATEGORIES.some(cat => cat.toLowerCase() === trimmed.toLowerCase()) ||
-      (customAdded && customAdded.toLowerCase() === trimmed.toLowerCase());
-
-    if (isDuplicate) {
-      alert("This category already exists.");
-      return;
-    }
-
-    setCustomAdded(trimmed);
-    onChange(trimmed);
-    setShowCustomInput(false);
-    setEditing(false);
-  };
-
-  const handleEdit = () => {
-    setEditing(true);
-    setShowCustomInput(true);
-    setCustomCategory(customAdded);
-  };
-
-  const handleDelete = () => {
-    setCustomAdded(null);
-    setCustomCategory('');
-    onChange('');
-    setEditing(false);
-    setShowCustomInput(false);
-  };
-
   return (
-    <div className="space-y-2">
-      {!customAdded && !showCustomInput && (
-        <select
-          onChange={handleSelect}
-          value={
-            DEFAULT_CATEGORIES.includes(selected)
-              ? selected
-              : ''
-          }
-          className="w-full border p-2 rounded"
-          required={required}
-        >
-          <option value="">-- Choose --</option>
-          {DEFAULT_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-          <option value="Custom">Custom</option>
-        </select>
-      )}
+    <div className="space-y-1.5">
+      <select
+        value={
+          isCustom
+            ? 'Custom'
+            : DEFAULT_CATEGORIES.find(
+              cat => cat.toLowerCase() === selected?.toLowerCase()
+            ) || ''
+        }
+        onChange={handleSelect}
+        className="w-full border border-gray-200 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+        required={required && !isCustom}
+      >
+        <option value="" disabled>-- Choose category --</option>
+        {DEFAULT_CATEGORIES.map(cat => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+        <option value="Custom">+ Custom</option>
+      </select>
 
-      {showCustomInput && (
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={customCategory}
-            onChange={(e) => setCustomCategory(e.target.value)}
-            placeholder="Enter custom category"
-            className="border p-2 rounded w-full"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleAddCustom();
-              }
-            }}
-          />
-          <button
-            type="button"
-            onClick={handleAddCustom}
-            className="bg-green-500 text-white px-3 py-1 rounded"
-          >
-            Add
-          </button>
-          {/* Hidden input to enforce required field if not added yet */}
-          {!customAdded && (
-            <input
-              type="text"
-              className="hidden"
-              required
-              value=""
-              onChange={() => { }}
-              onInvalid={() => alert("Please click 'Add' after typing your custom category.")}
-            />
-          )}
-        </div>
-      )}
-      {customAdded && !editing && (
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-purple-300 rounded">{customAdded}</span>
-          <button onClick={handleEdit} className="text-sm text-blue-600">Edit</button>
-          <button onClick={handleDelete} className="text-sm text-red-600">Delete</button>
-        </div>
+      {isCustom && (
+        <input
+          type="text"
+          value={customCategory}
+          onChange={(e) => { setCustomCategory(e.target.value); onChange(e.target.value); }}
+          placeholder="Enter custom category"
+          className="w-full border border-gray-200 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+          required={required}
+          autoFocus
+        />
       )}
     </div>
   );

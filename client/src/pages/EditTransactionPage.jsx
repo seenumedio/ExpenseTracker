@@ -10,10 +10,10 @@ import { useDispatch } from 'react-redux';
 import { updateTx } from '../features/transactions/txSlice';
 import API from '../api/axios';
 
-const EditTransactionPage = ({transactions}) => {
+const EditTransactionPage = ({ transactions }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
+
     const { id } = useParams();
     const transaction = transactions.find(s => String(s.id) === String(id));
 
@@ -24,7 +24,7 @@ const EditTransactionPage = ({transactions}) => {
     const [date, setDate] = useState('');
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
-    
+
     // ✅ populate AFTER data comes
     useEffect(() => {
         if (transaction) {
@@ -36,10 +36,9 @@ const EditTransactionPage = ({transactions}) => {
             setAmount(transaction.amount);
         }
     }, [transaction]);
-    
     // ✅ now safe to return
     if (!transaction) return <p>Loading...</p>;
-    
+
     const submitForm = async (e) => {
         e.preventDefault();
 
@@ -53,11 +52,11 @@ const EditTransactionPage = ({transactions}) => {
             amount
         };
 
-        if(updatedTransaction){
+        if (updatedTransaction) {
             const res = await API.patch(`/transactions/${id}`, updatedTransaction)
             dispatch(updateTx(res.data));
         }
-        toast.success('Transaction updated successfully');
+        toast.success('Transaction updated successfully', { position: "bottom-right" });
         return navigate(`/transactions/${id}`);
     };
 
@@ -164,7 +163,7 @@ const EditTransactionPage = ({transactions}) => {
                             </label>
                             <DatePicker
                                 selected={date ? new Date(date) : null}
-                                onChange={(d) => setDate(d.toISOString().slice(0, 10))}
+                                onChange={(d) => setDate(d)}
                                 placeholderText="Select a date"
                                 dateFormat="dd/MM/yyyy"
                                 className="border rounded w-full py-2 px-3"
@@ -174,7 +173,7 @@ const EditTransactionPage = ({transactions}) => {
                         <div>
                             <button
                                 className="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
-                                recurring="submit"
+                                type="submit"
                             >
                                 Update Transaction
                             </button>

@@ -1,6 +1,12 @@
 body{
-    background-color: #F8FAFC; 
+    background-color: #F8FAFC;
 }
+
+#root{
+    width: 90%;
+    margin: 0 auto;
+}
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;

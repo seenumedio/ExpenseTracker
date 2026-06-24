@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'
 import MainLayOut from './layouts/MainLayOut';
 import HomePage from './pages/HomePage';
@@ -13,6 +13,7 @@ import AuthPage from './pages/AuthPage.jsx';
 import { useSelector, useDispatch } from 'react-redux'
 import API from './api/axios.js'
 import { setTxs, setLoading } from './features/transactions/txSlice.js'
+import { logout } from './features/auth/authSlice.js'
 
 const App = () => {
   // login or logout
@@ -39,12 +40,12 @@ const App = () => {
         })
         dispatch(setTxs(res.data))
       } catch (err) {
+        if (err.response?.status === 401) dispatch(logout());
         console.log('Error:', err)
       } finally {
         dispatch(setLoading(false))
       }
     }
-    console.log(filters);
     if (token) fetchTxs()
   }, [filters, dispatch, token])
 
