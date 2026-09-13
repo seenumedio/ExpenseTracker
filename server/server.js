@@ -11,7 +11,7 @@ const authRoutes = require('./routes/authRoutes')
 const app = express()
 
 app.use(cors({
-    origin: "https://xpenseprime.netlify.app/",
+    origin: "https://xpenseprime.netlify.app",
     credentials: true
   }));
 app.use(express.json())
