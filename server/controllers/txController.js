@@ -49,6 +49,7 @@ const getOneTx = async (req, res) => {
 // add tx
 const addTx = async (req, res) => {
     const { type, category, recurring, description, date, amount } = req.body
+    console.log(req.body);
     try {
         const startDate = date ? new Date(date) : new Date()
         startDate.setHours(0, 0, 0, 0)
@@ -63,6 +64,7 @@ const addTx = async (req, res) => {
         })
         res.status(200).json(tx)
     } catch (err) {
+        console.log(err);
         res.status(400).json({ error: err.message })
     }
 }

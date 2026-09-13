@@ -39,8 +39,8 @@ const schema = new mongoose.Schema({
     { timestamps: true })
 
 // prevent exact duplicates
-schema.index(
-    { type: 1, category: 1, amount: 1, date: 1, description: 1 },
-    { unique: true }
-);
+// schema.index(
+//     { type: 1, category: 1, amount: 1, date: 1, description: 1 },
+//     { unique: true }
+// );
 module.exports = mongoose.model('Transaction', schema)

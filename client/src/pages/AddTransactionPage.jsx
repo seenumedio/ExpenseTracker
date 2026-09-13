@@ -14,7 +14,7 @@ const AddTransactionPage = () => {
     const [preview, setPreview] = useState(null);// state for image preview
     const [scanning, setScanning] = useState(false);
     // local form states
-    const [type, setType] = useState('Income');
+    const [type, setType] = useState('Expense');
     const [recurring, setRecurring] = useState('Monthly');
     const [category, setCategory] = useState('');
     const [date, setDate] = useState(Date.now());
@@ -195,7 +195,7 @@ const AddTransactionPage = () => {
                         <div>
                             <button
                                 className="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
-                                recurring="submit"
+                                type="submit"
                             >
                                 Add Transaction
                             </button>

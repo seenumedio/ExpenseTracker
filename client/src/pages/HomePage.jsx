@@ -59,12 +59,12 @@ const HomePage = ({ transactions }) => {
         {/* <Card bg="bg-white" p="p-8">
           <PieExpenses expenses={transactions} />
         </Card> */}
-        <Card bg="bg-white" p="p-8">
+        {/* <Card bg="bg-white" p="p-8">
           <BarExpenses 
             data={stats?.last7DaysExpenses}
             loading={loading}
           />
-        </Card>
+        </Card> */}
       </div>
     </>
   )
