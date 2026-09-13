@@ -10,14 +10,17 @@ const authRoutes = require('./routes/authRoutes')
 // express app
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    origin: "https://xpenseprime.netlify.app/",
+    credentials: true
+  }));
 app.use(express.json())
 
 // connecting to db
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         // listen to port
-        app.listen(process.env.PORT, () => {
+        app.listen(process.env.PORT || 4000, () => {
             console.log('connencted to db & listening to port', process.env.PORT)
         });
     })
