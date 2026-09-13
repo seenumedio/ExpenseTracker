@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 import Hero from '../components/Hero'
 import HomeCards from '../components/HomeCards'
@@ -14,6 +15,7 @@ import API from "../api/axios";
 const HomePage = ({ transactions }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const txsLoading = useSelector(state => state.transactions.loading)
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -34,6 +36,13 @@ const HomePage = ({ transactions }) => {
     };
     fetchStats();
   }, []);
+  if (txsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (transactions.length === 0) {
     return <NewUserPage />;
